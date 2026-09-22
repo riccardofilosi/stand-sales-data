@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!-- `viewport-fit=cover`: installata, l'app disegna anche sotto la tacca e
+         la barra di stato; i rientri li restituisce env(safe-area-inset-*) dove
+         serve (testata e fondo pagina). Senza, su un telefono con la tacca la
+         testata resta mezza coperta. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!-- iOS non legge le icone del manifest: senza questa riga l'icona in home
+         è uno screenshot della pagina. -->
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <!-- La barra di stato in standalone prende il colore da qui. Uno solo,
+         perché l'app ha una superficie sola: l'impianto dipende dal fondo
+         grafite, e su carta chiara le tinte delle famiglie si spengono. -->
+    <meta name="theme-color" content="#141718" />
+    <title>Veneto — cassa</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

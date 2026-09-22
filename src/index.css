@@ -1,0 +1,319 @@
+@import "tailwindcss";
+
+/* I pesi servono tutti e tre: 400 per il corpo, 500 per le cifre grandi — che
+   grandi non hanno bisogno di peso — e 600 per nomi e comandi. Installati via
+   npm perché la PWA deve funzionare senza CDN, e perché la Content Security
+   Policy blocca comunque i domini terzi. */
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+
+/* ---------------------------------------------------------------------------
+   CONSOLE — docs/design/console.md
+   Fondo quasi-nero, piastrelle di colore pieno, cifre grandi. Nel codice si
+   usano solo queste variabili, mai i valori esadecimali.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --bg: #141718;
+  --surf: #1e2124;
+  --surf2: #282c31;
+  --ink: #ffffff;
+  /* 5,6:1 sul fondo: è testo, non decorazione. */
+  --muted: #8b9297;
+  --line: rgba(255, 255, 255, 0.09);
+  --line-2: rgba(255, 255, 255, 0.17);
+
+  /* L'azione è l'inverso della pagina: il contrasto più alto che esista, sul
+     gesto che conta. */
+  --act-bg: #ffffff;
+  --act-ink: #141718;
+  --accent: #ffffff;
+
+  /* Il rosso è due. Quello SCRITTO sta su fondo scuro e deve schiarirsi
+     (8,1:1 sul fondo); quello DIPINTO resta scuro perché ci si scrive sopra
+     in bianco. Un solo valore non può fare entrambe le cose. */
+  --rosso: #ff8fa3;
+  --rosso-fondo: #a31621;
+
+  /* Estremi fissi: servono sopra le tinte, che non seguono nessun tema. */
+  --smalto-chiaro: #ffffff;
+  --smalto-scuro: #141718;
+
+  --r: 20px;
+  --r-sm: 14px;
+
+  /* Una schermata sola, sempre scura. Non è un ripiego: l'impianto dipende dal
+     fondo grafite — su carta chiara le tinte si spengono e il riconoscimento
+     per colore, che è tutto il vantaggio, si perde. Questa riga serve al
+     browser per dipingere di suo barre di scorrimento, tendine e cursori. */
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    background: var(--bg);
+  }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    -webkit-tap-highlight-color: transparent;
+    /* Il rimbalzo dello scorrimento, in cassa, sembra un tocco andato a vuoto. */
+    overscroll-behavior-y: none;
+  }
+
+  /* Il fuoco si deve vedere anche al sole, e non si toglie mai. */
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* --- Cifre --------------------------------------------------------------
+     Senza tabulari il totale balla mentre cambia e non si legge di sfuggita.
+     È il motivo per cui questa classe esiste invece di stare su `body`: le
+     cifre proporzionali restano giuste dentro il testo corrente. */
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em;
+  }
+
+  /* --- Superfici ---------------------------------------------------------- */
+  .plancia {
+    background: var(--surf);
+    border: 1px solid var(--line);
+    border-radius: var(--r);
+  }
+
+  .tenue {
+    color: var(--muted);
+  }
+
+  .etichetta {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* --- Le targhe ----------------------------------------------------------
+     Colore pieno, niente prezzo sopra lo smalto. Il prezzo sta sul cartiglio
+     bianco, dove il contrasto supera 15:1: sbagliare un prezzo letto è il solo
+     errore che costa denaro. */
+  .targa {
+    min-height: 96px;
+    border-radius: var(--r);
+    border: 1px solid transparent;
+    background: var(--tinta);
+    color: var(--inchiostro-tinta);
+    transition: transform 120ms ease;
+  }
+
+  /* La pressione affonda la targa invece di sollevarla: risponde come un tasto
+     vero, e con una mano sola la conferma tattile conta più dell'eleganza. */
+  .targa:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  .targa:disabled {
+    opacity: 0.35;
+  }
+
+  .cartiglio {
+    background: rgba(255, 255, 255, 0.94);
+    color: #141718;
+    border-radius: 999px;
+    padding: 2px 9px;
+    font-weight: 600;
+  }
+
+  /* Quante ne hai già battute, senza dover guardare in fondo. */
+  .contatore {
+    background: rgba(0, 0, 0, 0.36);
+    color: #ffffff;
+    border-radius: 999px;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 6px;
+    font-weight: 600;
+    font-size: 12.5px;
+  }
+
+  /* --- Pastiglie di famiglia ---------------------------------------------
+     Stanno a 44px apposta: non vendono, scelgono quale gruppo di targhe
+     mostrare. A 96px spingerebbero la prima fila di targhe sotto la piega,
+     cioè costerebbero scorrimento al gesto che invece paga.
+
+     Spenta si spegne il FONDO, non il testo: con `opacity` sbiadirebbe anche
+     la scritta e il contrasto crollerebbe. Con la tinta al 26% sul grafite il
+     testo bianco resta ampiamente sopra soglia. */
+  .pastiglia {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 13px;
+    border: 1px solid transparent;
+    background: color-mix(in srgb, var(--tinta) 26%, var(--bg));
+    color: var(--ink);
+    transition: transform 120ms ease;
+  }
+
+  .pastiglia[aria-pressed="true"] {
+    background: var(--tinta);
+    color: var(--inchiostro-tinta);
+  }
+
+  .pastiglia:active {
+    transform: scale(0.96);
+  }
+
+  /* --- Comandi ------------------------------------------------------------ */
+  .bottone-forte {
+    background: var(--act-bg);
+    color: var(--act-ink);
+    border-radius: var(--r);
+    font-weight: 600;
+    transition: transform 120ms ease;
+  }
+
+  .bottone-forte:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  .bottone-forte:disabled {
+    opacity: 0.38;
+  }
+
+  .bottone-quieto {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    font-weight: 600;
+  }
+
+  .bottone-quieto:disabled {
+    opacity: 0.3;
+  }
+
+  /* Armato: il secondo tocco è quello che fa danno, e lo dice col rosso. */
+  .bottone-armato {
+    background: var(--rosso-fondo);
+    border-color: var(--rosso-fondo);
+    color: #ffffff;
+  }
+
+  /* Il passo della quantità: correggere «quattro» in «tre» è un tocco solo. */
+  .passo {
+    background: var(--surf2);
+    border-radius: 999px;
+    padding: 3px;
+  }
+
+  .passo button {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    font-size: 19px;
+    line-height: 1;
+    color: var(--ink);
+    transition: background 120ms ease;
+  }
+
+  .passo button:hover:not(:disabled) {
+    background: var(--line);
+  }
+
+  .passo button:disabled {
+    opacity: 0.3;
+  }
+
+  .campo {
+    background: var(--surf);
+    color: var(--ink);
+    border: 1px solid var(--line-2);
+    border-radius: var(--r-sm);
+    font-family: inherit;
+    font-size: 16px; /* sotto i 16 iOS ingrandisce la pagina al fuoco */
+    min-height: 52px;
+    padding: 0 14px;
+  }
+
+  .campo::placeholder {
+    color: var(--muted);
+  }
+
+  /* --- Grafico ------------------------------------------------------------ */
+  .tela .griglia {
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .tela .base {
+    stroke: var(--line-2);
+    stroke-width: 1;
+  }
+
+  .tela .asse {
+    fill: var(--muted);
+    font-size: 8.5px;
+  }
+
+  .tela .colonna {
+    fill: var(--accent);
+    opacity: 0.8;
+  }
+
+  /* La fascia in corso vale quattordici minuti su trenta: disegnata piena
+     sembrerebbe un crollo delle vendite. */
+  .tela .parziale {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 3;
+  }
+
+  .tela .tratto {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .tela .coda-tratteggiata {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2;
+    stroke-dasharray: 4 3.5;
+    stroke-linecap: round;
+  }
+
+  .tela .punto {
+    fill: var(--surf);
+    stroke: var(--accent);
+    stroke-width: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Versione ferma di tutto ciò che si muove. */
+  .targa,
+  .pastiglia,
+  .bottone-forte {
+    transition: none;
+  }
+
+  .targa:active:not(:disabled),
+  .pastiglia:active,
+  .bottone-forte:active:not(:disabled) {
+    transform: none;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.42);
+  }
+}

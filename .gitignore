@@ -1,0 +1,26 @@
+node_modules/
+dist/
+coverage/
+.DS_Store
+
+# Segreti. L'ordine conta: in un .gitignore vince l'ULTIMA regola che combacia,
+# quindi le eccezioni per i file d'esempio devono stare in fondo. Prima c'era un
+# `.env*` dopo di loro che le annullava: i due esempi sopravvivevano solo perché
+# erano già tracciati, e un terzo non sarebbe mai entrato.
+.env
+.env.*
+*.local
+.vercel
+!.env.example
+!.env.test.local.example
+
+# Esiti di Playwright: si rigenerano a ogni corsa.
+playwright-report/
+test-results/
+
+# File di lavoro degli agenti di revisione: stanno su disco, non in archivio.
+scripts/_*.mjs
+
+# Pacchetti di migrazioni: si rigenerano, e in archivio sarebbero un doppione
+# che invecchia male.
+supabase/pacchetto-*.sql
