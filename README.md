@@ -1,4 +1,4 @@
-# Sagra Sales Data — raccolta e andamento delle vendite di uno stand
+# Stand Sales Data — raccolta e andamento delle vendite di uno stand
 
 PWA React + Supabase. Si installa dal browser, non serve alcuno store.
 
